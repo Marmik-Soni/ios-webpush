@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Non-bundled files — CJS scripts and the SW:
+    "scripts/**",
+    "public/sw.js",
   ]),
 ]);
 

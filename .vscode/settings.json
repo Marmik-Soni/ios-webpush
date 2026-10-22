@@ -1,4 +1,28 @@
 {
   "css.customData": [],
-  "css.lint.unknownAtRules": "ignore"
+  "css.lint.unknownAtRules": "ignore",
+
+  // Format on save with the project's Prettier config
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // File hygiene (matches .editorconfig)
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  // Exclude noise from search/explorer
+  "files.exclude": {
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/out": true,
+    "**/build": true
+  },
+  "search.exclude": {
+    "**/pnpm-lock.yaml": true,
+    "**/codebase.md": true
+  }
 }
