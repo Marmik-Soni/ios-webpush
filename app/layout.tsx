@@ -1,29 +1,31 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Push notification tester",
-  description: "Test push notifications for iOS devices",
+  title: "Push Lab",
+  description: "iOS/iPadOS Web Push diagnostic tool",
+  appleWebApp: {
+    capable: true,
+    title: "Push Lab",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/icons/180",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="h-full">
+      <body className="min-h-full flex flex-col bg-white text-zinc-900 antialiased font-sans">
+        {children}
+      </body>
     </html>
   );
 }
