@@ -1,5 +1,7 @@
 # Push Lab
 
+[![CI](https://github.com/Marmik-Soni/ios-webpush/actions/workflows/ci.yml/badge.svg)](https://github.com/Marmik-Soni/ios-webpush/actions/workflows/ci.yml)
+
 An iOS/iPadOS Web Push diagnostic tool built with Next.js, TypeScript, and Tailwind CSS. It shows exactly what Web Push can and cannot do on a given iPhone or iPad in two runtime contexts: a normal Safari browser tab and the site installed on the Home Screen as a standalone web app.
 
 > **Note:** This is an honest diagnostic utility, not a production consumer application. It is designed to capture ground truth behavior, raw exceptions, and APNs responses directly on Apple mobile hardware.
@@ -10,6 +12,7 @@ An iOS/iPadOS Web Push diagnostic tool built with Next.js, TypeScript, and Tailw
 
 Explore our comprehensive technical documentation in the [`docs/`](docs/) directory:
 
+- 🔄 **[CI/CD & Deployment Guide](docs/CICD.md)**: GitHub Actions Continuous Integration pipeline, Vercel Continuous Deployment setup, environment secrets checklist, and pre-push hygiene.
 - 📖 **[iOS & iPadOS Web Push Guide](docs/IOS_WEB_PUSH_GUIDE.md)**: Deep dive into Apple's Web Push architecture, APNs integration, the "no silent push" mandate, user gesture requirements, declarative push (iOS 18.4+), iOS 26+ UA freeze, and isolated storage sandboxes.
 - 🏗️ **[Architecture & Design](docs/ARCHITECTURE.md)**: Component hierarchy, Service Worker lifecycle, defensive push parsing, IndexedDB event persistence, and timing-safe `/api/push` security.
 - 🧪 **[Testing Matrix & Protocol](docs/TESTING_MATRIX.md)**: Full verification protocol covering Safari tabs vs. Home Screen web apps across foreground, background, locked screen, and swiped-away states, plus the "Declarative without JavaScript" test.
@@ -64,7 +67,10 @@ pnpm build
 # Start production server
 pnpm start
 
-# Run all code hygiene checks (Prettier, ESLint, TypeScript)
+# Run complete code hygiene check suite (format + lint + typecheck + build)
+pnpm hygiene
+
+# Or run individual checks
 pnpm format:check
 pnpm lint
 pnpm typecheck

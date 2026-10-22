@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Code Hygiene & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check code formatting (Prettier)
+        run: pnpm format:check
+
+      - name: Run linter (ESLint)
+        run: pnpm lint
+
+      - name: Run type check (TypeScript)
+        run: pnpm typecheck
+
+      - name: Build Next.js application
+        env:
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSPOSnfMSCj0auM8W309GdqVDsE478GZ5GEA
+          VAPID_PRIVATE_KEY: dummy_vapid_private_key_for_ci_build_only
+          VAPID_SUBJECT: mailto:ci-test@example.com
+          TESTER_KEY: dummy_ci_tester_key
+        run: pnpm build
