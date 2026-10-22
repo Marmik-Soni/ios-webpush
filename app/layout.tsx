@@ -18,11 +18,12 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#ffffff",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full bg-white text-zinc-900" style={{ colorScheme: "light" }}>
       <body className="min-h-full flex flex-col bg-white text-zinc-900 antialiased font-sans">
         {children}
       </body>

@@ -61,19 +61,19 @@ export default function EnvironmentSection({
         value={env.displayModeStandalone ? "✅ yes" : "❌ no"}
       />
       {model && model.confidence !== "unique" && (
-        <p className="text-xs text-zinc-400">
+        <p className="text-xs text-zinc-500">
           Hint: Display Zoom changes screen dimensions. The model table is best-effort.
         </p>
       )}
 
       <button
         onClick={() => setUaOpen(!uaOpen)}
-        className="text-left text-sm text-zinc-500 dark:text-zinc-400 underline underline-offset-2"
+        className="text-left text-sm text-zinc-600 hover:text-zinc-900 underline underline-offset-2 transition-colors"
       >
         {uaOpen ? "Hide" : "Show"} user agent
       </button>
       {uaOpen && (
-        <pre className="text-xs bg-zinc-100 dark:bg-zinc-800 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap break-all">
+        <pre className="text-xs bg-zinc-100 border border-zinc-200 text-zinc-800 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap break-all">
           {env.userAgent}
         </pre>
       )}
@@ -84,8 +84,8 @@ export default function EnvironmentSection({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 text-sm">
-      <span className="text-zinc-500 dark:text-zinc-400 shrink-0">{label}</span>
-      <span className="text-right font-mono">{value}</span>
+      <span className="text-zinc-500 shrink-0">{label}</span>
+      <span className="text-right font-mono text-zinc-900">{value}</span>
     </div>
   );
 }

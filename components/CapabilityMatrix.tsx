@@ -49,10 +49,10 @@ export default function CapabilityMatrix({
   return (
     <section className="flex flex-col gap-2">
       <h2 className="text-lg font-semibold">Capability Matrix</h2>
-      <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 divide-y divide-zinc-200 dark:divide-zinc-700 overflow-hidden">
+      <div className="rounded-lg border border-zinc-200 divide-y divide-zinc-200 overflow-hidden bg-white">
         {rows.map((r) => (
           <div key={r.label} className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
-            <span className="text-zinc-700 dark:text-zinc-300">{r.label}</span>
+            <span className="text-zinc-700">{r.label}</span>
             <span className="font-mono text-xs shrink-0">
               {r.ok ? "✅" : "❌"} {r.raw}
             </span>
@@ -61,7 +61,7 @@ export default function CapabilityMatrix({
       </div>
 
       {apple && isBrowserTab && (
-        <div className="mt-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 text-sm text-amber-800 dark:text-amber-200">
+        <div className="mt-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-800">
           <p className="font-medium">Push requires a Home Screen install</p>
           <ol className="mt-1.5 ml-4 list-decimal space-y-0.5 text-xs">
             <li>Tap the Share button in Safari</li>

@@ -22,12 +22,12 @@ export default function ManualFields() {
   return (
     <section className="flex flex-col gap-2">
       <h2 className="text-lg font-semibold">Manual Fields</h2>
-      <p className="text-xs text-zinc-400">
+      <p className="text-xs text-zinc-500">
         Persisted in localStorage. Each Home Screen install has separate storage.
       </p>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-zinc-500 dark:text-zinc-400">Actual model</span>
+        <span className="text-zinc-600 font-medium">Actual model</span>
         <input
           type="text"
           value={model}
@@ -36,12 +36,12 @@ export default function ManualFields() {
             save("manual.model", e.target.value);
           }}
           placeholder="e.g. iPhone 15 Pro"
-          className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px] placeholder:text-zinc-400"
+          className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 focus:outline-none px-3 py-2 text-[16px] placeholder:text-zinc-400"
         />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-zinc-500 dark:text-zinc-400">
+        <span className="text-zinc-600 font-medium">
           Actual iOS version (Settings → General → About)
         </span>
         <input
@@ -52,12 +52,12 @@ export default function ManualFields() {
             save("manual.iosVersion", e.target.value);
           }}
           placeholder="e.g. 18.4.1"
-          className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px] placeholder:text-zinc-400"
+          className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 focus:outline-none px-3 py-2 text-[16px] placeholder:text-zinc-400"
         />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-zinc-500 dark:text-zinc-400">Notes</span>
+        <span className="text-zinc-600 font-medium">Notes</span>
         <textarea
           value={notes}
           onChange={(e) => {
@@ -66,7 +66,7 @@ export default function ManualFields() {
           }}
           rows={2}
           placeholder="Any extra observations…"
-          className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px] placeholder:text-zinc-400 resize-y"
+          className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 focus:outline-none px-3 py-2 text-[16px] placeholder:text-zinc-400 resize-y"
         />
       </label>
     </section>

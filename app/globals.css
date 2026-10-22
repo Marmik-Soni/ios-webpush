@@ -2,7 +2,8 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #18181b;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -10,12 +11,8 @@
   --color-foreground: var(--foreground);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Force bright mode by scoping dark variants only to explicit .dark class */
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
   background: var(--background);

@@ -64,7 +64,7 @@ export default function SubscriptionSection({
           </div>
         </>
       ) : (
-        <p className="text-sm text-zinc-400">No active subscription.</p>
+        <p className="text-sm text-zinc-500 italic">No active subscription.</p>
       )}
     </section>
   );
@@ -73,8 +73,8 @@ export default function SubscriptionSection({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 text-sm">
-      <span className="text-zinc-500 dark:text-zinc-400 shrink-0">{label}</span>
-      <span className="text-right font-mono">{value}</span>
+      <span className="text-zinc-500 shrink-0">{label}</span>
+      <span className="text-right font-mono text-zinc-900">{value}</span>
     </div>
   );
 }
@@ -91,7 +91,7 @@ function SmallBtn({
   return (
     <button
       onClick={onClick}
-      className="min-h-[44px] rounded-lg px-3 py-2 text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 active:scale-[0.98] transition-colors select-none"
+      className="min-h-[44px] rounded-lg px-3 py-2 text-xs font-medium bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200 active:scale-[0.98] transition-colors select-none"
     >
       {active ? "Copied!" : label}
     </button>

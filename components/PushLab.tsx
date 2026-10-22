@@ -424,7 +424,7 @@ export default function PushLab() {
       {/* Header */}
       <header>
         <h1 className="text-2xl font-bold tracking-tight">Push Lab</h1>
-        <div className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 space-y-0.5">
+        <div className="mt-1 text-sm text-zinc-500 space-y-0.5">
           <p>
             SW version: {swVersion ?? "—"} · State: {swState}
           </p>
@@ -495,7 +495,7 @@ export default function PushLab() {
         />
 
         {/* Maintenance */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-200 dark:border-zinc-700">
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-200">
           <Btn label="Unsubscribe" running={running} onClick={handleUnsubscribe} />
           <Btn label="Unregister SW" running={running} onClick={handleUnregisterSW} />
           <Btn label="Clear logs" running={running} onClick={handleClearLogs} />
@@ -522,7 +522,7 @@ export default function PushLab() {
       {/* Copy report */}
       <button
         onClick={handleCopyReport}
-        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 py-3 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 active:bg-zinc-100 dark:active:bg-zinc-700 transition-colors"
+        className="w-full rounded-lg border border-zinc-300 py-3 text-sm font-medium hover:bg-zinc-50 active:bg-zinc-100 transition-colors"
       >
         Copy report
       </button>
@@ -549,8 +549,8 @@ function Btn({
     "min-h-[44px] rounded-lg px-4 py-2 text-sm font-medium transition-colors active:scale-[0.98] select-none";
   const colors =
     variant === "danger"
-      ? "bg-red-50 text-red-700 border border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800"
-      : "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200";
+      ? "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
+      : "bg-zinc-100 text-zinc-800 hover:bg-zinc-200";
   return (
     <button onClick={onClick} className={`${base} ${colors}`}>
       {isRunning ? "running…" : label}

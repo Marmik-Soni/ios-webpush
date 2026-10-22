@@ -108,11 +108,11 @@ export default function SendPush({
   };
 
   return (
-    <div className="flex flex-col gap-3 pt-3 border-t border-zinc-200 dark:border-zinc-700">
-      <h3 className="text-base font-semibold">Send Test Push</h3>
+    <div className="flex flex-col gap-3 pt-3 border-t border-zinc-200">
+      <h3 className="text-base font-semibold text-zinc-900">Send Test Push</h3>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-zinc-500 dark:text-zinc-400">Tester key</span>
+        <span className="text-zinc-600 font-medium">Tester key</span>
         <input
           type="password"
           value={testerKey}
@@ -121,36 +121,36 @@ export default function SendPush({
             setStored("testerKey", e.target.value);
           }}
           placeholder="Your TESTER_KEY value"
-          className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px] placeholder:text-zinc-400"
+          className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none px-3 py-2 text-[16px] placeholder:text-zinc-400"
         />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-zinc-500 dark:text-zinc-400">Title</span>
+        <span className="text-zinc-600 font-medium">Title</span>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px]"
+          className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none px-3 py-2 text-[16px]"
         />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-zinc-500 dark:text-zinc-400">Body</span>
+        <span className="text-zinc-600 font-medium">Body</span>
         <input
           type="text"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px]"
+          className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none px-3 py-2 text-[16px]"
         />
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span className="text-zinc-500 dark:text-zinc-400">Mode</span>
+        <span className="text-zinc-600 font-medium">Mode</span>
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as "legacy" | "declarative")}
-          className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px]"
+          className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none px-3 py-2 text-[16px]"
         >
           <option value="legacy">Legacy (SW-based)</option>
           <option value="declarative">Declarative (iOS 18.4+)</option>
@@ -159,28 +159,28 @@ export default function SendPush({
 
       <button
         onClick={() => setAdvancedOpen(!advancedOpen)}
-        className="text-left text-sm text-zinc-500 dark:text-zinc-400 underline underline-offset-2"
+        className="text-left text-sm text-zinc-600 hover:text-zinc-900 underline underline-offset-2 transition-colors"
       >
         {advancedOpen ? "Hide" : "Show"} advanced fields
       </button>
 
       {advancedOpen && (
-        <div className="flex flex-col gap-2 pl-2 border-l-2 border-zinc-200 dark:border-zinc-700">
+        <div className="flex flex-col gap-2 pl-2 border-l-2 border-zinc-200">
           <label className="flex flex-col gap-1 text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">TTL (seconds, 1-86400)</span>
+            <span className="text-zinc-600 font-medium">TTL (seconds, 1-86400)</span>
             <input
               type="number"
               value={ttl}
               onChange={(e) => setTtl(e.target.value)}
-              className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px]"
+              className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none px-3 py-2 text-[16px]"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">Urgency</span>
+            <span className="text-zinc-600 font-medium">Urgency</span>
             <select
               value={urgency}
               onChange={(e) => setUrgency(e.target.value)}
-              className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px]"
+              className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none px-3 py-2 text-[16px]"
             >
               <option value="very-low">very-low</option>
               <option value="low">low</option>
@@ -189,21 +189,21 @@ export default function SendPush({
             </select>
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">Topic (optional, 1-32 chars)</span>
+            <span className="text-zinc-600 font-medium">Topic (optional, 1-32 chars)</span>
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px]"
+              className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none px-3 py-2 text-[16px]"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            <span className="text-zinc-500 dark:text-zinc-400">Badge (optional, 0-99)</span>
+            <span className="text-zinc-600 font-medium">Badge (optional, 0-99)</span>
             <input
               type="number"
               value={badge}
               onChange={(e) => setBadge(e.target.value)}
-              className="rounded-lg border border-zinc-300 dark:border-zinc-600 bg-transparent px-3 py-2 text-[16px]"
+              className="rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none px-3 py-2 text-[16px]"
             />
           </label>
         </div>
@@ -212,35 +212,35 @@ export default function SendPush({
       <div className="flex gap-2">
         <button
           onClick={() => handleSend(0)}
-          className="flex-1 min-h-[44px] rounded-lg px-4 py-2 text-sm font-medium bg-indigo-600 text-white active:scale-[0.98] transition-colors select-none"
+          className="flex-1 min-h-[44px] rounded-lg px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm active:scale-[0.98] transition-colors select-none"
         >
           {running === "Send now" ? "sending…" : "Send now"}
         </button>
         <button
           onClick={() => handleSend(10)}
-          className="flex-1 min-h-[44px] rounded-lg px-4 py-2 text-sm font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 active:scale-[0.98] transition-colors select-none"
+          className="flex-1 min-h-[44px] rounded-lg px-4 py-2 text-sm font-medium bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-300 active:scale-[0.98] transition-colors select-none"
         >
           {running === "Send in 10s" ? "sending…" : "Send in 10 s"}
         </button>
       </div>
-      <p className="text-xs text-zinc-400">
+      <p className="text-xs text-zinc-500">
         &ldquo;Send in 10 s&rdquo;: the delay happens on the server. Lock the phone after tapping to
         test background delivery.
       </p>
 
       {lastResponse && (
-        <div className="flex flex-col gap-1">
-          <pre className="text-xs bg-zinc-100 dark:bg-zinc-800 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
+        <div className="flex flex-col gap-2">
+          <pre className="text-xs bg-zinc-50 border border-zinc-200 text-zinc-800 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap break-all max-h-48 overflow-y-auto font-mono">
             {JSON.stringify(lastResponse, null, 2)}
           </pre>
           {lastResponse.ok === true && (
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-zinc-500">
               201 means Apple accepted the push, not that it was displayed. The Delivery log is the
               evidence.
             </p>
           )}
           {typeof lastResponse.hint === "string" && lastResponse.hint && (
-            <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+            <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg font-medium">
               💡 {lastResponse.hint}
             </p>
           )}
