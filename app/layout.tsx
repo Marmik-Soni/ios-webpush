@@ -21,7 +21,7 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full bg-white text-zinc-900" style={{ colorScheme: "light" }}>
       <body className="min-h-full flex flex-col bg-white text-zinc-900 antialiased font-sans">
