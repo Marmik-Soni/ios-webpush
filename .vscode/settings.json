@@ -2,9 +2,8 @@
   "css.customData": [],
   "css.lint.unknownAtRules": "ignore",
 
-  // Format on save with the project's Prettier config
+  // Format on save
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
