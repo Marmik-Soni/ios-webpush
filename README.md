@@ -4,6 +4,11 @@
 
 An iOS/iPadOS Web Push diagnostic tool built with Next.js, TypeScript, and Tailwind CSS. It shows exactly what Web Push can and cannot do on a given iPhone or iPad in two runtime contexts: a normal Safari browser tab and the site installed on the Home Screen as a standalone web app.
 
+- **⚡ Send & Test Workspace:** Dispatch push notifications in Classic (Service Worker) or Declarative (iOS 18.4+) modes, with a real-time countdown cooldown banner and lock-screen anticipation timer.
+- **🔔 Sonner Toast System:** Instantaneous diagnostic alerts, copy confirmations, and structured APNs error reporting with troubleshooting hints.
+- **📊 Diagnostic Engine:** Live 8-point Capability Matrix, environment detection, and manual device overrides.
+- **📋 Persistent Delivery Log:** Direct IndexedDB receipts captured by the Service Worker even while the device is locked or the app is closed.
+
 > **Note:** This is an honest diagnostic utility, not a production consumer application. It is designed to capture ground truth behavior, raw exceptions, and APNs responses directly on Apple mobile hardware.
 
 ---

@@ -49,10 +49,11 @@ Work through each cell in the matrix below. Check off whether the push notificat
 
 ### Test C: Background Delivery (App Minimized)
 
-1. In the **Send Push** card, choose **"Send in 10 s"**.
-2. Immediately swipe up to go home (minimizing Push Lab).
-3. Wait 10 seconds.
-4. **Expected Outcome:**
+1. In the **Send Push** card, tap **"Send in 10 s"** (or use the 5s / 30s preset).
+2. Observe the **Cooldown Banner** and live button countdown (`⏱️ 10s remaining…`).
+3. Swipe up to return to the Home Screen (minimizing Push Lab).
+4. Wait for the countdown to elapse.
+5. **Expected Outcome:**
    - The push banner drops down over the iOS home screen.
    - Reopen Push Lab; the **Delivery Log** will have recorded the arrival while in the background.
 
@@ -60,13 +61,14 @@ Work through each cell in the matrix below. Check off whether the push notificat
 
 ### Test D: Locked Screen Delivery
 
-1. Set a 10-second delay in **Send Push**.
-2. Tap **"Send in 10 s"**.
+1. In **Send Push**, tap **"Send in 10 s"**.
+2. Notice the live countdown countdown in the active Cooldown Banner.
 3. **Immediately press the device lock/power button** to turn the screen black.
 4. Wait 10 seconds.
 5. **Expected Outcome:**
-   - The phone screen lights up and displays the notification on the Lock Screen.
+   - The phone screen lights up and displays the notification directly on the Lock Screen.
    - The Service Worker wakes up and records the event in IndexedDB.
+   - Reopening Push Lab shows the delivery receipt in the **Delivery Log** tab.
 
 ---
 

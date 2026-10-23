@@ -73,17 +73,23 @@ Push Lab is a specialized diagnostics utility built on **Next.js (App Router)**,
 
 ## 2. Component Structure
 
-The frontend consists of focused, decoupled React client components:
+The frontend is organized into an iOS HIG-compliant tabbed architecture (`Send & Test`, `Diagnostics`, `Logs`) orchestrated by [`PushLab.tsx`](file:///c:/MarmikSoni/ios-webpush/components/PushLab.tsx):
+
+- **Header & Status Ribbon:** Persistent top app bar rendering live status chips (`Mode`, `Permission`, `Worker`, `Push`) and quick access to diagnostic export (`Copy Report`) and state reset.
+- **Segmented Navigation:**
+  - **⚡ Send & Test Tab:** Combines active [`SubscriptionSection.tsx`](file:///c:/MarmikSoni/ios-webpush/components/SubscriptionSection.tsx) controls, the [`SendPush.tsx`](file:///c:/MarmikSoni/ios-webpush/components/SendPush.tsx) test dispatch engine with live countdown cooldown, and native hardware tests (local notifications, badge updates).
+  - **📊 Diagnostics Tab:** Aggregates [`EnvironmentSection.tsx`](file:///c:/MarmikSoni/ios-webpush/components/EnvironmentSection.tsx), [`CapabilityMatrix.tsx`](file:///c:/MarmikSoni/ios-webpush/components/CapabilityMatrix.tsx), and [`ManualFields.tsx`](file:///c:/MarmikSoni/ios-webpush/components/ManualFields.tsx).
+  - **📋 Logs Tab:** Renders the IndexedDB-backed [`DeliveryLog.tsx`](file:///c:/MarmikSoni/ios-webpush/components/DeliveryLog.tsx) with live receipt counts, real-time [`PageLog.tsx`](file:///c:/MarmikSoni/ios-webpush/components/PageLog.tsx) activity trace, and Service Worker lifecycle maintenance controls.
 
 | Component                                                                                         | Responsibility                                                                                                                                           |
 | :------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`PushLab.tsx`](file:///c:/MarmikSoni/ios-webpush/components/PushLab.tsx)                         | Root controller orchestrating component layout, Service Worker initialization, broadcast listeners, and report generation.                               |
-| [`EnvironmentSection.tsx`](file:///c:/MarmikSoni/ios-webpush/components/EnvironmentSection.tsx)   | Displays runtime context (PWA vs Browser tab), iOS version with detection source, screen resolution, and candidate device models.                        |
+| [`PushLab.tsx`](file:///c:/MarmikSoni/ios-webpush/components/PushLab.tsx)                         | Root controller orchestrating segmented tab layout, status ribbon, Service Worker lifecycle, broadcast listeners, and report generation.                 |
+| [`EnvironmentSection.tsx`](file:///c:/MarmikSoni/ios-webpush/components/EnvironmentSection.tsx)   | Displays runtime context (PWA vs Browser tab), iOS version with detection source, screen resolution, candidate device models, and copyable user agent.   |
 | [`CapabilityMatrix.tsx`](file:///c:/MarmikSoni/ios-webpush/components/CapabilityMatrix.tsx)       | Verifies individual API availability (`isSecureContext`, `serviceWorker`, `PushManager`, `Notification`, `window.pushManager`, `navigator.setAppBadge`). |
-| [`SubscriptionSection.tsx`](file:///c:/MarmikSoni/ios-webpush/components/SubscriptionSection.tsx) | Displays active push subscription details, endpoint hostname validation, VAPID key mismatch warnings, and copy actions.                                  |
-| [`SendPush.tsx`](file:///c:/MarmikSoni/ios-webpush/components/SendPush.tsx)                       | Configures test push dispatches (title, body, mode, delay, TTL, urgency, topic, badge) and handles POST requests to `/api/push`.                         |
-| [`DeliveryLog.tsx`](file:///c:/MarmikSoni/ios-webpush/components/DeliveryLog.tsx)                 | Queries the Service Worker's IndexedDB store to render real-time logs of delivered notifications and latency measurements.                               |
-| [`PageLog.tsx`](file:///c:/MarmikSoni/ios-webpush/components/PageLog.tsx)                         | On-screen console stream capturing user interaction steps, API calls, and diagnostic flags.                                                              |
+| [`SubscriptionSection.tsx`](file:///c:/MarmikSoni/ios-webpush/components/SubscriptionSection.tsx) | Displays active push subscription details, endpoint hostname validation, VAPID key mismatch warnings, and copy actions with toast notifications.         |
+| [`SendPush.tsx`](file:///c:/MarmikSoni/ios-webpush/components/SendPush.tsx)                       | Configures test push dispatches with live cooldown countdowns, delay presets, Sonner feedback, and handles POST requests to `/api/push`.                 |
+| [`DeliveryLog.tsx`](file:///c:/MarmikSoni/ios-webpush/components/DeliveryLog.tsx)                 | Queries the Service Worker's IndexedDB store to render real-time logs of delivered notifications and latency measurements with Sonner toast feedback.    |
+| [`PageLog.tsx`](file:///c:/MarmikSoni/ios-webpush/components/PageLog.tsx)                         | Dark terminal console stream capturing user interaction steps, API calls, and diagnostic flags with one-click copy support.                              |
 | [`ManualFields.tsx`](file:///c:/MarmikSoni/ios-webpush/components/ManualFields.tsx)               | Provides manual input fields for device model, true iOS version, and tester notes, persisted in `localStorage`.                                          |
 
 ---
@@ -144,3 +150,15 @@ All client-side state keys are namespaced with the `pushlab.` prefix:
 | `pushlab.manual.iosVersion` | `string`  | User-entered OS version override.                                                                       |
 | `pushlab.manual.notes`      | `string`  | User notes for the diagnostic session.                                                                  |
 | `pushlab.sendDefaults.*`    | `object`  | Last used payload configurations.                                                                       |
+
+---
+
+## 6. Feedback & Notification UX
+
+1. **Sonner Toast Notification System:**
+   - Powered by `<Toaster position="top-center" richColors closeButton />` initialized in [`app/layout.tsx`](file:///c:/MarmikSoni/ios-webpush/app/layout.tsx).
+   - Provides instantaneous feedback for push dispatch outcomes, permission changes, service worker lifecycles, and clipboard actions.
+   - Surfacing rich upstream error details and resolution hints for failed APNs dispatches (`401`, `403`, `410`, `502`).
+2. **Live Cooldown Timer & Lock-Screen Anticipation:**
+   - In [`SendPush.tsx`](file:///c:/MarmikSoni/ios-webpush/components/SendPush.tsx), when scheduling a delayed push (e.g., 10s), the client sets up a high-precision `setInterval` (100ms) calculating `Math.max(0, Math.ceil((targetTime - Date.now()) / 1000))`.
+   - Renders an interactive Cooldown Banner with dynamic progress bar and live countdown badge directly inside the button (`⏱️ 9s remaining…` down to `🚀 Dispatching…`), allowing testers to anticipate exactly when APNs will hit the device lock screen.
