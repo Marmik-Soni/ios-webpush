@@ -261,7 +261,11 @@ export default function SendPush({
               className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-800 transition-colors"
             >
               <span>{advancedOpen ? "▼" : "▶"}</span>
-              <span>{advancedOpen ? "Hide push headers" : "Show push headers (TTL, urgency, topic, badge)"}</span>
+              <span>
+                {advancedOpen
+                  ? "Hide push headers"
+                  : "Show push headers (TTL, urgency, topic, badge)"}
+              </span>
             </button>
           </div>
         )}
@@ -291,7 +295,9 @@ export default function SendPush({
               </select>
             </label>
             <label className="flex flex-col gap-1 text-xs">
-              <span className="font-medium text-zinc-600">Topic (collapse identifier, optional)</span>
+              <span className="font-medium text-zinc-600">
+                Topic (collapse identifier, optional)
+              </span>
               <input
                 type="text"
                 value={topic}
@@ -370,7 +376,8 @@ export default function SendPush({
         </div>
 
         <p className="text-xs text-zinc-400 leading-relaxed px-0.5">
-          The delay happens on the server before dispatching to Apple APNs. Tap &ldquo;Send in 10s&rdquo; and immediately lock your phone to verify lock-screen delivery.
+          The delay happens on the server before dispatching to Apple APNs. Tap &ldquo;Send in
+          10s&rdquo; and immediately lock your phone to verify lock-screen delivery.
         </p>
       </div>
 

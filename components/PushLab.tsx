@@ -384,9 +384,7 @@ export default function PushLab() {
     const swLines = swLog.map(
       (e) => `[${new Date(e.ts).toLocaleTimeString()}] [SW:${e.type}] ${JSON.stringify(e.detail)}`,
     );
-    const pageLines = pageLog.map(
-      (l) => `[${new Date(l.ts).toLocaleTimeString()}] ${l.text}`,
-    );
+    const pageLines = pageLog.map((l) => `[${new Date(l.ts).toLocaleTimeString()}] ${l.text}`);
     const text = [...swLines, ...pageLines].join("\n");
     try {
       await navigator.clipboard.writeText(text);
@@ -433,11 +431,7 @@ export default function PushLab() {
 
       {/* ── Status strip ── */}
       <div className="grid grid-cols-4 gap-px rounded-2xl border border-zinc-200 bg-zinc-100 overflow-hidden text-center shadow-xs">
-        <StatusCell
-          label="Mode"
-          value={isStandalone ? "PWA" : "Browser"}
-          ok={isStandalone}
-        />
+        <StatusCell label="Mode" value={isStandalone ? "PWA" : "Browser"} ok={isStandalone} />
         <StatusCell
           label="Perm"
           value={permission}
@@ -449,11 +443,7 @@ export default function PushLab() {
           value={swState === "activated" ? (swVersion ?? "active") : swState}
           ok={swState === "activated"}
         />
-        <StatusCell
-          label="Push"
-          value={isSubscribed ? "Active" : "None"}
-          ok={isSubscribed}
-        />
+        <StatusCell label="Push" value={isSubscribed ? "Active" : "None"} ok={isSubscribed} />
       </div>
 
       {/* ── iOS Add to Home Screen callout ── */}
@@ -463,43 +453,72 @@ export default function PushLab() {
             Add to Home Screen to enable Web Push
           </p>
           <p className="text-xs text-amber-800 leading-relaxed">
-            iOS Web Push only works when the app is installed as a PWA. Follow these steps in Safari:
+            iOS Web Push only works when the app is installed as a PWA. Follow these steps in
+            Safari:
           </p>
           <ol className="flex flex-col gap-2">
             <li className="flex items-start gap-2.5 text-xs text-amber-900">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">1</span>
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">
+                1
+              </span>
               <span>
                 Tap the{" "}
                 <span className="inline-flex items-center gap-0.5 font-semibold">
                   Share
                   {/* iOS Share icon — box with up arrow */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline h-3.5 w-3.5 ml-0.5">
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                    <polyline points="16 6 12 2 8 6"/>
-                    <line x1="12" y1="2" x2="12" y2="15"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="inline h-3.5 w-3.5 ml-0.5"
+                  >
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                    <polyline points="16 6 12 2 8 6" />
+                    <line x1="12" y1="2" x2="12" y2="15" />
                   </svg>
                 </span>{" "}
                 button in the Safari toolbar (bottom centre on iPhone).
               </span>
             </li>
             <li className="flex items-start gap-2.5 text-xs text-amber-900">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">2</span>
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">
+                2
+              </span>
               <span>
                 Scroll down and tap{" "}
                 <span className="font-semibold">
                   Add to Home Screen
                   {/* iOS home screen icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline h-3.5 w-3.5 ml-0.5">
-                    <rect x="3" y="3" width="18" height="18" rx="3"/>
-                    <line x1="12" y1="8" x2="12" y2="16"/>
-                    <line x1="8" y1="12" x2="16" y2="12"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="inline h-3.5 w-3.5 ml-0.5"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="3" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
                   </svg>
-                </span>.
+                </span>
+                .
               </span>
             </li>
             <li className="flex items-start gap-2.5 text-xs text-amber-900">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">3</span>
-              <span>Tap <span className="font-semibold">Add</span> then open <span className="font-semibold">Push Lab</span> from your Home Screen.</span>
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">
+                3
+              </span>
+              <span>
+                Tap <span className="font-semibold">Add</span> then open{" "}
+                <span className="font-semibold">Push Lab</span> from your Home Screen.
+              </span>
             </li>
           </ol>
         </div>
@@ -517,11 +536,17 @@ export default function PushLab() {
             />
             <div className="flex items-center justify-between text-xs py-1">
               <span className="text-zinc-500">Permission</span>
-              <span className={
-                permission === "granted" ? "text-emerald-700 font-medium" :
-                permission === "denied" ? "text-red-600 font-medium" :
-                "text-zinc-600"
-              }>{permission}</span>
+              <span
+                className={
+                  permission === "granted"
+                    ? "text-emerald-700 font-medium"
+                    : permission === "denied"
+                      ? "text-red-600 font-medium"
+                      : "text-zinc-600"
+                }
+              >
+                {permission}
+              </span>
             </div>
             <div className="border-t border-zinc-100 pt-3 flex flex-col gap-2">
               {!isSubscribed ? (
@@ -640,7 +665,8 @@ export default function PushLab() {
           <Section>
             <SectionHeader title="Hardware & OS Tests" />
             <p className="text-xs text-zinc-400 pb-1">
-              Verify local notification permissions and native app icon badges without invoking APNs.
+              Verify local notification permissions and native app icon badges without invoking
+              APNs.
             </p>
             <div className="grid grid-cols-3 gap-2">
               <Btn label="Local Alert" running={running} onClick={handleLocalNotification} />
@@ -740,10 +766,14 @@ export default function PushLab() {
               {/* SW delivery receipts */}
               {swLog.map((e, i) => (
                 <div key={`sw-${i}`} className="flex gap-2 py-0.5">
-                  <span className="text-zinc-500 shrink-0">{new Date(e.ts).toLocaleTimeString()}</span>
+                  <span className="text-zinc-500 shrink-0">
+                    {new Date(e.ts).toLocaleTimeString()}
+                  </span>
                   <span className="text-sky-400 shrink-0">[SW:{e.type}]</span>
                   {e.detail.latencyMs !== undefined && (
-                    <span className="text-emerald-400 font-semibold">⚡{e.detail.latencyMs as number}ms</span>
+                    <span className="text-emerald-400 font-semibold">
+                      ⚡{e.detail.latencyMs as number}ms
+                    </span>
                   )}
                   {typeof e.detail.id === "string" && (
                     <span className="text-zinc-400">{(e.detail.id as string).slice(0, 8)}…</span>
@@ -830,7 +860,9 @@ function StatusCell({
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-2.5 bg-white">
-      <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">{label}</span>
+      <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
+        {label}
+      </span>
       <span
         className={`text-xs font-semibold mt-0.5 ${
           ok ? "text-emerald-600" : bad ? "text-red-600" : "text-zinc-500"
@@ -866,7 +898,11 @@ function Btn({
         : "bg-white text-zinc-700 border-zinc-200 hover:bg-zinc-50";
 
   return (
-    <button onClick={onClick} disabled={isRunning || running !== null} className={`${base} ${colors} disabled:opacity-40`}>
+    <button
+      onClick={onClick}
+      disabled={isRunning || running !== null}
+      className={`${base} ${colors} disabled:opacity-40`}
+    >
       {isRunning ? "…" : label}
     </button>
   );
