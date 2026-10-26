@@ -2,9 +2,40 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
 import "./globals.css";
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_APP_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "https://ios-webpush-xi.vercel.app");
+
 export const metadata: Metadata = {
-  title: "Push Lab",
-  description: "iOS/iPadOS Web Push diagnostic tool",
+  metadataBase: new URL(siteUrl),
+  title: "Push Lab — iOS Web Push Tester",
+  description: "Clean, simple Web Push diagnostic tool for iOS, iPadOS, Safari, and Apple APNs.",
+  openGraph: {
+    title: "Push Lab — iOS Web Push Tester",
+    description: "Clean, simple Web Push diagnostic tool for iOS, iPadOS, Safari, and Apple APNs.",
+    url: "/",
+    siteName: "Push Lab",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Push Lab — iOS Web Push Tester",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Push Lab — iOS Web Push Tester",
+    description: "Clean, simple Web Push diagnostic tool for iOS, iPadOS, Safari, and Apple APNs.",
+    images: ["/og-image.png"],
+  },
   appleWebApp: {
     capable: true,
     title: "Push Lab",
@@ -12,6 +43,7 @@ export const metadata: Metadata = {
   },
   icons: {
     apple: "/icons/180",
+    icon: "/icons/180",
   },
 };
 
