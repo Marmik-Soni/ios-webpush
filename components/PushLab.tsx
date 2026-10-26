@@ -30,8 +30,6 @@ import EnvironmentSection from "./EnvironmentSection";
 import CapabilityMatrix from "./CapabilityMatrix";
 import ManualFields from "./ManualFields";
 import SubscriptionSection from "./SubscriptionSection";
-import DeliveryLog from "./DeliveryLog";
-import PageLog from "./PageLog";
 import SendPush from "./SendPush";
 
 export interface LogLine {
@@ -39,10 +37,10 @@ export interface LogLine {
   text: string;
 }
 
-export type ActiveTab = "send" | "diagnostics" | "logs";
+export type Mode = "simple" | "advanced";
 
 export default function PushLab() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("send");
+  const [mode, setMode] = useState<Mode>("simple");
   const [env, setEnv] = useState<EnvironmentInfo | null>(null);
   const [apple, setApple] = useState(false);
   const [ctx, setCtx] = useState<string>("detecting…");
@@ -253,7 +251,7 @@ export default function PushLab() {
         setSubscription(res.data);
         setPermission(Notification.permission);
         log("✔ Subscribed (classic)");
-        toast.success("Subscribed to Web Push! (Classic)");
+        toast.success("Subscribed to Web Push!");
       } else {
         log(`✖ ${res.error.name}: ${res.error.message}`);
         toast.error("Push subscription failed", {
@@ -382,63 +380,29 @@ export default function PushLab() {
     toast.info(`Auto-register SW turned ${next ? "on" : "off"}`);
   };
 
-  const handleCopyReport = async () => {
-    const report = {
-      device: {
-        userAgent: env?.userAgent,
-        platform: env?.platform,
-        isAppleMobile: apple,
-        context: ctx,
-        iosVersion: iosVer,
-        model: model,
-        manual: {
-          model: getStored("manual.model"),
-          iosVersion: getStored("manual.iosVersion"),
-          notes: getStored("manual.notes"),
-        },
-      },
-      capabilities: {
-        isSecureContext: env?.isSecureContext,
-        serviceWorker: "serviceWorker" in navigator,
-        PushManager: "PushManager" in window,
-        Notification: typeof Notification !== "undefined",
-        notificationPermission:
-          typeof Notification !== "undefined" ? Notification.permission : "unavailable",
-        windowPushManager: typeof window !== "undefined" && !!window.pushManager,
-        setAppBadge: typeof navigator !== "undefined" && !!navigator.setAppBadge,
-        navigatorStandalone: env?.navigatorStandalone,
-        displayModeStandalone: env?.displayModeStandalone,
-      },
-      sw: { version: swVersion, state: swState, scope: swScope, scriptURL: swScriptURL },
-      permission,
-      subscription: subscription
-        ? {
-            endpointHost: new URL(subscription.endpoint).hostname,
-            vapidKeyMatch:
-              getStored("vapidKeyUsed") === (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? ""),
-          }
-        : null,
-      swLog: swLog.slice(0, 50),
-      pageLog: pageLog.slice(0, 100).map((l) => l.text),
-      generatedAt: new Date().toISOString(),
-    };
-    const text = JSON.stringify(report, null, 2);
+  const handleCopyLog = async () => {
+    const swLines = swLog.map(
+      (e) => `[${new Date(e.ts).toLocaleTimeString()}] [SW:${e.type}] ${JSON.stringify(e.detail)}`,
+    );
+    const pageLines = pageLog.map(
+      (l) => `[${new Date(l.ts).toLocaleTimeString()}] ${l.text}`,
+    );
+    const text = [...swLines, ...pageLines].join("\n");
     try {
       await navigator.clipboard.writeText(text);
-      log("✔ Report copied to clipboard");
-      toast.success("Diagnostic report copied to clipboard");
+      log("✔ Log copied to clipboard");
+      toast.success("Log copied to clipboard");
     } catch {
-      log("✖ Clipboard failed — see page log");
       toast.error("Clipboard copy failed");
     }
   };
 
   if (!env) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-2">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
-          <p className="text-sm font-medium text-zinc-500">Detecting device environment…</p>
+      <main className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-800 border-t-transparent" />
+          <p className="text-sm text-zinc-500">Detecting environment…</p>
         </div>
       </main>
     );
@@ -446,159 +410,186 @@ export default function PushLab() {
 
   const isStandalone = ctx === "Standalone (Home Screen)";
   const isSubscribed = !!subscription;
+  // Show iOS "Add to Home Screen" callout only in Simple mode, on iOS, in browser tab
+  const showIosCallout = mode === "simple" && apple && !isStandalone;
 
   return (
-    <main className="mx-auto w-full max-w-lg px-4 py-5 flex flex-col gap-5">
-      {/* App Header */}
-      <header className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-200">
-              <span className="text-xl">🔔</span>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-zinc-900 flex items-center gap-2">
-                Push Lab
-                <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 border border-indigo-200/50">
-                  iOS Web Push
-                </span>
-              </h1>
-              <p className="text-xs text-zinc-500">
-                {model?.candidates[0] ?? "Device"} · iOS {iosVer?.value ?? "16.4+"}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={handleCopyReport}
-              className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700 shadow-2xs hover:bg-zinc-50 active:scale-95 transition-all select-none"
-            >
-              <span>📋</span>
-              <span>Report</span>
-            </button>
-          </div>
+    <main className="mx-auto w-full max-w-lg px-4 py-6 flex flex-col gap-5">
+      {/* ── Header ── */}
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-semibold tracking-tight text-zinc-900">Push Lab</h1>
+          <p className="text-xs text-zinc-400 mt-0.5">iOS Web Push tester</p>
         </div>
 
-        {/* Live Status Strip */}
-        <div className="grid grid-cols-4 gap-1.5 rounded-2xl bg-white border border-zinc-200/80 p-2 shadow-2xs text-center">
-          <div className="flex flex-col items-center justify-center py-1">
-            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
-              Mode
-            </span>
-            <span
-              className={`text-xs font-bold ${
-                isStandalone ? "text-emerald-600" : "text-amber-600"
-              }`}
-            >
-              {isStandalone ? "PWA" : "Browser"}
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center justify-center py-1 border-l border-zinc-100">
-            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
-              Perm
-            </span>
-            <span
-              className={`text-xs font-bold ${
-                permission === "granted"
-                  ? "text-emerald-600"
-                  : permission === "denied"
-                    ? "text-red-600"
-                    : "text-zinc-500"
-              }`}
-            >
-              {permission}
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center justify-center py-1 border-l border-zinc-100">
-            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
-              Worker
-            </span>
-            <span
-              className={`text-xs font-bold ${
-                swState === "activated" ? "text-emerald-600" : "text-zinc-600"
-              }`}
-            >
-              {swState === "activated" ? (swVersion ?? "active") : swState}
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center justify-center py-1 border-l border-zinc-100">
-            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
-              Push
-            </span>
-            <span
-              className={`text-xs font-bold ${isSubscribed ? "text-emerald-600" : "text-zinc-400"}`}
-            >
-              {isSubscribed ? "Active" : "None"}
-            </span>
-          </div>
-        </div>
+        {/* Mode toggle */}
+        <button
+          onClick={() => setMode(mode === "simple" ? "advanced" : "simple")}
+          className="text-sm font-medium text-zinc-400 hover:text-zinc-700 transition-colors select-none"
+        >
+          {mode === "simple" ? "Advanced →" : "← Simple"}
+        </button>
       </header>
 
-      {/* Segmented iOS Tabs */}
-      <nav className="flex rounded-xl bg-zinc-200/70 p-1 shadow-inner select-none">
-        <button
-          onClick={() => setActiveTab("send")}
-          className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all ${
-            activeTab === "send"
-              ? "bg-white text-zinc-900 shadow-sm"
-              : "text-zinc-600 hover:text-zinc-900"
-          }`}
-        >
-          ⚡ Send & Test
-        </button>
+      {/* ── Status strip ── */}
+      <div className="grid grid-cols-4 gap-px rounded-2xl border border-zinc-200 bg-zinc-100 overflow-hidden text-center shadow-xs">
+        <StatusCell
+          label="Mode"
+          value={isStandalone ? "PWA" : "Browser"}
+          ok={isStandalone}
+        />
+        <StatusCell
+          label="Perm"
+          value={permission}
+          ok={permission === "granted"}
+          bad={permission === "denied"}
+        />
+        <StatusCell
+          label="Worker"
+          value={swState === "activated" ? (swVersion ?? "active") : swState}
+          ok={swState === "activated"}
+        />
+        <StatusCell
+          label="Push"
+          value={isSubscribed ? "Active" : "None"}
+          ok={isSubscribed}
+        />
+      </div>
 
-        <button
-          onClick={() => setActiveTab("diagnostics")}
-          className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all ${
-            activeTab === "diagnostics"
-              ? "bg-white text-zinc-900 shadow-sm"
-              : "text-zinc-600 hover:text-zinc-900"
-          }`}
-        >
-          📊 Diagnostics
-        </button>
-
-        <button
-          onClick={() => setActiveTab("logs")}
-          className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all relative ${
-            activeTab === "logs"
-              ? "bg-white text-zinc-900 shadow-sm"
-              : "text-zinc-600 hover:text-zinc-900"
-          }`}
-        >
-          📋 Logs
-          {swLog.length > 0 && (
-            <span className="ml-1.5 rounded-full bg-indigo-600 px-1.5 py-0.2 text-[10px] font-bold text-white">
-              {swLog.length}
-            </span>
-          )}
-        </button>
-      </nav>
-
-      {/* TAB 1: Send & Test */}
-      {activeTab === "send" && (
-        <div className="flex flex-col gap-5 animate-in fade-in duration-150">
-          {/* Subscription State Card */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-zinc-900">Subscription Status</h2>
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                  isSubscribed ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-600"
-                }`}
-              >
-                {isSubscribed ? "● Subscribed" : "○ Not Subscribed"}
+      {/* ── iOS Add to Home Screen callout ── */}
+      {showIosCallout && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 flex flex-col gap-2.5">
+          <p className="text-sm font-semibold text-amber-900">
+            Add to Home Screen to enable Web Push
+          </p>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            iOS Web Push only works when the app is installed as a PWA. Follow these steps in Safari:
+          </p>
+          <ol className="flex flex-col gap-2">
+            <li className="flex items-start gap-2.5 text-xs text-amber-900">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">1</span>
+              <span>
+                Tap the{" "}
+                <span className="inline-flex items-center gap-0.5 font-semibold">
+                  Share
+                  {/* iOS Share icon — box with up arrow */}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline h-3.5 w-3.5 ml-0.5">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                    <polyline points="16 6 12 2 8 6"/>
+                    <line x1="12" y1="2" x2="12" y2="15"/>
+                  </svg>
+                </span>{" "}
+                button in the Safari toolbar (bottom centre on iPhone).
               </span>
+            </li>
+            <li className="flex items-start gap-2.5 text-xs text-amber-900">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">2</span>
+              <span>
+                Scroll down and tap{" "}
+                <span className="font-semibold">
+                  Add to Home Screen
+                  {/* iOS home screen icon */}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline h-3.5 w-3.5 ml-0.5">
+                    <rect x="3" y="3" width="18" height="18" rx="3"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                  </svg>
+                </span>.
+              </span>
+            </li>
+            <li className="flex items-start gap-2.5 text-xs text-amber-900">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 font-bold text-[11px]">3</span>
+              <span>Tap <span className="font-semibold">Add</span> then open <span className="font-semibold">Push Lab</span> from your Home Screen.</span>
+            </li>
+          </ol>
+        </div>
+      )}
+
+      {/* ── SIMPLE MODE ── */}
+      {mode === "simple" && (
+        <div className="flex flex-col gap-4">
+          {/* Subscribe card */}
+          <Section>
+            <SectionHeader
+              title="Push Subscription"
+              badge={isSubscribed ? "Subscribed" : undefined}
+              badgeOk={isSubscribed}
+            />
+            <div className="flex items-center justify-between text-xs py-1">
+              <span className="text-zinc-500">Permission</span>
+              <span className={
+                permission === "granted" ? "text-emerald-700 font-medium" :
+                permission === "denied" ? "text-red-600 font-medium" :
+                "text-zinc-600"
+              }>{permission}</span>
             </div>
+            <div className="border-t border-zinc-100 pt-3 flex flex-col gap-2">
+              {!isSubscribed ? (
+                <Btn
+                  label="Subscribe to Push Notifications"
+                  running={running}
+                  onClick={handleClassicSubscribe}
+                  primary
+                />
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs text-zinc-500">
+                    🍏 Subscribed via Apple APNs. You can now send test pushes below.
+                  </p>
+                  <button
+                    onClick={handleUnsubscribe}
+                    disabled={running !== null}
+                    className="text-xs text-red-500 hover:text-red-700 font-medium text-left disabled:opacity-40 transition-colors"
+                  >
+                    Unsubscribe
+                  </button>
+                </div>
+              )}
+            </div>
+          </Section>
 
+          {/* Send push card */}
+          <Section>
+            <SectionHeader title="Send Test Push" />
+            <SendPush
+              subscription={subscription}
+              model={model}
+              iosVer={iosVer}
+              ctx={ctx}
+              log={log}
+              running={running}
+              setRunning={setRunning}
+              simpleMode
+            />
+          </Section>
+
+          {/* Local tests card */}
+          <Section>
+            <SectionHeader title="Local Tests" />
+            <p className="text-xs text-zinc-400 pb-1">
+              Test notification permission and app badge without a network call.
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              <Btn label="Local Alert" running={running} onClick={handleLocalNotification} />
+              <Btn label="Badge (3)" running={running} onClick={() => handleSetBadge(3)} />
+              <Btn label="Clear Badge" running={running} onClick={handleClearBadge} />
+            </div>
+          </Section>
+        </div>
+      )}
+
+      {/* ── ADVANCED MODE ── */}
+      {mode === "advanced" && (
+        <div className="flex flex-col gap-4">
+          {/* Subscription */}
+          <Section>
+            <SectionHeader
+              title="Subscription"
+              badge={isSubscribed ? "Subscribed" : undefined}
+              badgeOk={isSubscribed}
+            />
             <SubscriptionSection subscription={subscription} permission={permission} />
-
-            {/* Quick Subscription Actions */}
-            <div className="flex flex-col gap-2 pt-2 border-t border-zinc-100">
+            <div className="border-t border-zinc-100 pt-3 flex flex-col gap-2">
               {!isSubscribed ? (
                 <div className="grid grid-cols-2 gap-2">
                   <Btn
@@ -629,11 +620,11 @@ export default function PushLab() {
                 </div>
               )}
             </div>
-          </div>
+          </Section>
 
-          {/* Send Test Push Form */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <h2 className="text-sm font-bold text-zinc-900">Send Test Push</h2>
+          {/* Send push */}
+          <Section>
+            <SectionHeader title="Send Test Push" />
             <SendPush
               subscription={subscription}
               model={model}
@@ -643,71 +634,48 @@ export default function PushLab() {
               running={running}
               setRunning={setRunning}
             />
-          </div>
+          </Section>
 
-          {/* Local Native Hardware Tests */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <h2 className="text-sm font-bold text-zinc-900">Hardware & OS Tests</h2>
-            <p className="text-xs text-zinc-500">
-              Verify local notification permissions and native app icon badges without invoking
-              network APNs.
+          {/* Local tests */}
+          <Section>
+            <SectionHeader title="Hardware & OS Tests" />
+            <p className="text-xs text-zinc-400 pb-1">
+              Verify local notification permissions and native app icon badges without invoking APNs.
             </p>
-            <div className="grid grid-cols-3 gap-2 pt-1">
+            <div className="grid grid-cols-3 gap-2">
               <Btn label="Local Alert" running={running} onClick={handleLocalNotification} />
               <Btn label="Set Badge (3)" running={running} onClick={() => handleSetBadge(3)} />
               <Btn label="Clear Badge" running={running} onClick={handleClearBadge} />
             </div>
-          </div>
-        </div>
-      )}
+          </Section>
 
-      {/* TAB 2: Diagnostics */}
-      {activeTab === "diagnostics" && (
-        <div className="flex flex-col gap-5 animate-in fade-in duration-150">
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <h2 className="text-sm font-bold text-zinc-900">System Environment</h2>
+          {/* Environment */}
+          <Section>
+            <SectionHeader title="System Environment" />
             <EnvironmentSection env={env} apple={apple} ctx={ctx} iosVer={iosVer} model={model} />
-          </div>
+          </Section>
 
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <h2 className="text-sm font-bold text-zinc-900">API Capability Matrix</h2>
+          {/* Capability matrix */}
+          <Section>
+            <SectionHeader title="API Capabilities" />
             <CapabilityMatrix env={env} apple={apple} ctx={ctx} />
-          </div>
+          </Section>
 
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <h2 className="text-sm font-bold text-zinc-900">Device Overrides</h2>
+          {/* Device overrides */}
+          <Section>
+            <SectionHeader title="Device Overrides" />
             <ManualFields />
-          </div>
-        </div>
-      )}
+          </Section>
 
-      {/* TAB 3: Logs */}
-      {activeTab === "logs" && (
-        <div className="flex flex-col gap-5 animate-in fade-in duration-150">
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <DeliveryLog
-              entries={swLog}
-              onRefresh={refreshSwLog}
-              onClear={async () => {
-                await clearSwLog();
-                setSwLog([]);
-              }}
-            />
-          </div>
-
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <PageLog entries={pageLog} />
-          </div>
-
-          {/* Service Worker Lifecycle & Maintenance */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs flex flex-col gap-3">
-            <h2 className="text-sm font-bold text-zinc-900">Worker Lifecycle & Maintenance</h2>
+          {/* SW lifecycle */}
+          <Section>
+            <SectionHeader title="Service Worker" />
             <label className="flex items-center gap-2.5 text-xs font-medium text-zinc-700 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={autoRegister}
                 onChange={toggleAutoRegister}
-                className="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 rounded text-zinc-800 focus:ring-zinc-400"
               />
               Auto-register Service Worker on page load
             </label>
@@ -730,10 +698,147 @@ export default function PushLab() {
                 variant="danger"
               />
             </div>
-          </div>
+          </Section>
         </div>
       )}
+
+      {/* ── LOGS (always visible) ── */}
+      <Section>
+        {/* Log header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-zinc-800">Logs</h2>
+            {(swLog.length > 0 || pageLog.length > 0) && (
+              <span className="rounded-full bg-zinc-100 border border-zinc-200 px-2 py-0.5 text-[10px] font-semibold text-zinc-600">
+                {swLog.length + pageLog.length}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyLog}
+              className="text-xs font-medium text-zinc-500 hover:text-zinc-800 transition-colors select-none"
+            >
+              Copy
+            </button>
+            <span className="text-zinc-200">|</span>
+            <button
+              onClick={handleClearLogs}
+              className="text-xs font-medium text-zinc-500 hover:text-zinc-800 transition-colors select-none"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+
+        {/* Combined log output */}
+        <div className="rounded-xl bg-zinc-950 border border-zinc-800 p-3 max-h-72 overflow-y-auto font-mono text-[11px] leading-relaxed">
+          {swLog.length === 0 && pageLog.length === 0 ? (
+            <span className="text-zinc-500 italic">No log entries yet.</span>
+          ) : (
+            <>
+              {/* SW delivery receipts */}
+              {swLog.map((e, i) => (
+                <div key={`sw-${i}`} className="flex gap-2 py-0.5">
+                  <span className="text-zinc-500 shrink-0">{new Date(e.ts).toLocaleTimeString()}</span>
+                  <span className="text-sky-400 shrink-0">[SW:{e.type}]</span>
+                  {e.detail.latencyMs !== undefined && (
+                    <span className="text-emerald-400 font-semibold">⚡{e.detail.latencyMs as number}ms</span>
+                  )}
+                  {typeof e.detail.id === "string" && (
+                    <span className="text-zinc-400">{(e.detail.id as string).slice(0, 8)}…</span>
+                  )}
+                  {e.detail.error !== undefined && (
+                    <span className="text-red-400">Err:{String(e.detail.error)}</span>
+                  )}
+                </div>
+              ))}
+              {/* Page activity log */}
+              {pageLog.map((line, i) => (
+                <div key={`pg-${i}`} className="flex gap-2 py-0.5">
+                  <span className="text-zinc-500 shrink-0 select-none">
+                    {new Date(line.ts).toLocaleTimeString()}
+                  </span>
+                  <span
+                    className={
+                      line.text.startsWith("✖")
+                        ? "text-red-400 font-medium"
+                        : line.text.startsWith("✔")
+                          ? "text-emerald-400 font-medium"
+                          : line.text.startsWith("▶")
+                            ? "text-amber-300 font-medium"
+                            : "text-zinc-300"
+                    }
+                  >
+                    {line.text}
+                  </span>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      </Section>
     </main>
+  );
+}
+
+// ─── Small components ─────────────────────────────────────────────────────────
+
+function Section({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-zinc-200 bg-white p-4 flex flex-col gap-3 shadow-xs">
+      {children}
+    </div>
+  );
+}
+
+function SectionHeader({
+  title,
+  badge,
+  badgeOk,
+}: {
+  title: string;
+  badge?: string;
+  badgeOk?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <h2 className="text-sm font-semibold text-zinc-800">{title}</h2>
+      {badge && (
+        <span
+          className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+            badgeOk ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-600"
+          }`}
+        >
+          {badge}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function StatusCell({
+  label,
+  value,
+  ok,
+  bad,
+}: {
+  label: string;
+  value: string;
+  ok?: boolean;
+  bad?: boolean;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center py-2.5 bg-white">
+      <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">{label}</span>
+      <span
+        className={`text-xs font-semibold mt-0.5 ${
+          ok ? "text-emerald-600" : bad ? "text-red-600" : "text-zinc-500"
+        }`}
+      >
+        {value}
+      </span>
+    </div>
   );
 }
 
@@ -752,17 +857,17 @@ function Btn({
 }) {
   const isRunning = running === label;
   const base =
-    "min-h-[44px] rounded-xl px-3 py-2 text-xs font-semibold transition-all active:scale-[0.98] select-none shadow-2xs flex items-center justify-center text-center";
+    "min-h-[44px] rounded-xl px-3 py-2 text-xs font-medium transition-all active:scale-[0.98] select-none flex items-center justify-center text-center border";
   const colors =
     variant === "danger"
-      ? "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
+      ? "bg-white text-red-600 border-red-200 hover:bg-red-50"
       : primary
-        ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100"
-        : "bg-zinc-100 text-zinc-800 hover:bg-zinc-200 border border-zinc-200/60";
+        ? "bg-zinc-900 text-white border-zinc-900 hover:bg-zinc-800"
+        : "bg-white text-zinc-700 border-zinc-200 hover:bg-zinc-50";
 
   return (
-    <button onClick={onClick} disabled={isRunning} className={`${base} ${colors}`}>
-      {isRunning ? "running…" : label}
+    <button onClick={onClick} disabled={isRunning || running !== null} className={`${base} ${colors} disabled:opacity-40`}>
+      {isRunning ? "…" : label}
     </button>
   );
 }
