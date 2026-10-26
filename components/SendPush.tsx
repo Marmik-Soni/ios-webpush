@@ -179,10 +179,10 @@ export default function SendPush({
     <div className="flex flex-col gap-4">
       {/* Active Cooldown Banner */}
       {countdown !== null && (
-        <div className="relative overflow-hidden rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-sm transition-all animate-in fade-in">
+        <div className="relative overflow-hidden rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-sm transition-all animate-soft-in">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white font-mono font-bold text-lg shadow-sm animate-pulse">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white font-mono font-bold text-lg shadow-sm">
                 {countdown}s
               </div>
               <div>
@@ -198,15 +198,19 @@ export default function SendPush({
                 </p>
               </div>
             </div>
-            <span className="shrink-0 rounded-full bg-amber-200/80 px-2.5 py-1 text-xs font-semibold text-amber-900">
-              Cooldown
-            </span>
+            <button
+              type="button"
+              onClick={clearTimer}
+              className="shrink-0 rounded-lg border border-amber-300/80 bg-white/90 hover:bg-white px-2.5 py-1 text-xs font-semibold text-amber-900 active:scale-95 transition-all shadow-2xs"
+            >
+              Cancel
+            </button>
           </div>
 
           {/* Progress bar */}
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-amber-200/60">
             <div
-              className="h-full bg-amber-500 transition-all duration-150 ease-out rounded-full"
+              className="h-full bg-amber-500 transition-all duration-100 ease-linear rounded-full"
               style={{ width: `${progressPercent}%` }}
             />
           </div>

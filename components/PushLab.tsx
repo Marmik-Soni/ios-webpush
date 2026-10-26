@@ -31,6 +31,7 @@ import CapabilityMatrix from "./CapabilityMatrix";
 import ManualFields from "./ManualFields";
 import SubscriptionSection from "./SubscriptionSection";
 import SendPush from "./SendPush";
+import AppleLogo from "./AppleLogo";
 
 export interface LogLine {
   ts: number;
@@ -526,51 +527,126 @@ export default function PushLab() {
 
       {/* ── SIMPLE MODE ── */}
       {mode === "simple" && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 animate-soft-in">
           {/* Subscribe card */}
           <Section>
-            <SectionHeader
-              title="Push Subscription"
-              badge={isSubscribed ? "Subscribed" : undefined}
-              badgeOk={isSubscribed}
-            />
-            <div className="flex items-center justify-between text-xs py-1">
-              <span className="text-zinc-500">Permission</span>
-              <span
-                className={
-                  permission === "granted"
-                    ? "text-emerald-700 font-medium"
-                    : permission === "denied"
-                      ? "text-red-600 font-medium"
-                      : "text-zinc-600"
-                }
-              >
-                {permission}
-              </span>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-zinc-900">Push Subscription</h2>
+              {isSubscribed ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                  </span>
+                  Subscribed
+                </span>
+              ) : (
+                <span className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-[11px] font-medium text-zinc-600">
+                  Not Subscribed
+                </span>
+              )}
             </div>
-            <div className="border-t border-zinc-100 pt-3 flex flex-col gap-2">
-              {!isSubscribed ? (
+
+            {isSubscribed ? (
+              <div className="flex flex-col gap-3 pt-1">
+                {/* APNs & Permission Information Box */}
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-3.5 flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-2xs">
+                        <AppleLogo className="h-4 w-4 fill-current" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-zinc-900">
+                          Apple Push Notification service
+                        </span>
+                        <span className="text-[11px] text-zinc-500">Registered via Apple APNs</span>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                      Active
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-2 border-t border-zinc-200/60">
+                    <span className="text-zinc-500">Permission</span>
+                    <span
+                      className={`font-semibold flex items-center gap-1.5 ${
+                        permission === "granted"
+                          ? "text-emerald-700"
+                          : permission === "denied"
+                            ? "text-red-600"
+                            : "text-zinc-600"
+                      }`}
+                    >
+                      {permission === "granted" && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      )}
+                      {permission === "granted"
+                        ? "Permission Granted"
+                        : permission === "denied"
+                          ? "Permission Denied"
+                          : permission}
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-xs text-zinc-500 leading-relaxed px-0.5">
+                  Subscribed via Apple APNs. You can now send test pushes below.
+                </p>
+
+                {/* Big Unsubscribe Button */}
+                <button
+                  onClick={handleUnsubscribe}
+                  disabled={running !== null}
+                  className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50/60 hover:bg-red-100/70 text-red-600 hover:text-red-700 text-xs font-semibold active:scale-[0.98] transition-all duration-150 disabled:opacity-40 select-none shadow-2xs"
+                >
+                  {running === "Unsubscribe" ? (
+                    <span className="flex items-center gap-2">
+                      <span className="h-3 w-3 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
+                      Unsubscribing…
+                    </span>
+                  ) : (
+                    "Unsubscribe"
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 pt-1">
+                <div className="flex items-center justify-between text-xs py-1">
+                  <span className="text-zinc-500">Permission</span>
+                  <span
+                    className={
+                      permission === "granted"
+                        ? "text-emerald-700 font-semibold"
+                        : permission === "denied"
+                          ? "text-red-600 font-semibold"
+                          : "text-zinc-600 font-medium"
+                    }
+                  >
+                    {permission === "granted"
+                      ? "Permission Granted"
+                      : permission === "denied"
+                        ? "Permission Denied"
+                        : permission}
+                  </span>
+                </div>
+
+                {permission === "denied" && (
+                  <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                    Notifications are blocked in iOS settings. Go to Settings → Notifications → Push
+                    Lab to allow.
+                  </p>
+                )}
+
                 <Btn
                   label="Subscribe to Push Notifications"
                   running={running}
                   onClick={handleClassicSubscribe}
                   primary
                 />
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <p className="text-xs text-zinc-500">
-                    🍏 Subscribed via Apple APNs. You can now send test pushes below.
-                  </p>
-                  <button
-                    onClick={handleUnsubscribe}
-                    disabled={running !== null}
-                    className="text-xs text-red-500 hover:text-red-700 font-medium text-left disabled:opacity-40 transition-colors"
-                  >
-                    Unsubscribe
-                  </button>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </Section>
 
           {/* Send push card */}
@@ -605,7 +681,7 @@ export default function PushLab() {
 
       {/* ── ADVANCED MODE ── */}
       {mode === "advanced" && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 animate-soft-in">
           {/* Subscription */}
           <Section>
             <SectionHeader
@@ -836,10 +912,18 @@ function SectionHeader({
       <h2 className="text-sm font-semibold text-zinc-800">{title}</h2>
       {badge && (
         <span
-          className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-            badgeOk ? "bg-emerald-100 text-emerald-800" : "bg-zinc-100 text-zinc-600"
+          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+            badgeOk
+              ? "bg-emerald-50 text-emerald-800 border border-emerald-200/80"
+              : "bg-zinc-100 text-zinc-600"
           }`}
         >
+          {badgeOk && (
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            </span>
+          )}
           {badge}
         </span>
       )}
