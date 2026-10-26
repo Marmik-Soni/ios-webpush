@@ -15,13 +15,6 @@ function sleep(ms: number) {
   return new Promise<void>((r) => setTimeout(r, ms));
 }
 
-function safeEqual(a: string, b: string): boolean {
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) return false;
-  return crypto.timingSafeEqual(bufA, bufB);
-}
-
 const ALLOWED_HOSTS = ["push.apple.com", "fcm.googleapis.com", "updates.push.services.mozilla.com"];
 
 function isAllowedEndpoint(endpoint: string): boolean {
@@ -49,18 +42,7 @@ function siteOrigin(req: NextRequest): string {
 // POST handler
 // ---------------------------------------------------------------------------
 export async function POST(req: NextRequest) {
-  // 1. Auth
-  const testerKey = process.env.TESTER_KEY;
-  if (!testerKey) {
-    return json({ error: "TESTER_KEY not configured" }, 500);
-  }
-
-  const reqKey = req.headers.get("x-tester-key") ?? "";
-  if (!safeEqual(reqKey, testerKey)) {
-    return json({ error: "Unauthorized" }, 401);
-  }
-
-  // 2. VAPID config
+  // 1. VAPID config
   const vapidPublic = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
   const vapidSubject = process.env.VAPID_SUBJECT;
