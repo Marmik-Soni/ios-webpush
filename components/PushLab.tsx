@@ -31,7 +31,7 @@ import CapabilityMatrix from "./CapabilityMatrix";
 import ManualFields from "./ManualFields";
 import SubscriptionSection from "./SubscriptionSection";
 import SendPush from "./SendPush";
-import AppleLogo from "./AppleLogo";
+import { Apple, Share, PlusSquare } from "react-bootstrap-icons";
 
 export interface LogLine {
   ts: number;
@@ -466,21 +466,7 @@ export default function PushLab() {
                 Tap the{" "}
                 <span className="inline-flex items-center gap-0.5 font-semibold">
                   Share
-                  {/* iOS Share icon — box with up arrow */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="inline h-3.5 w-3.5 ml-0.5"
-                  >
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-                    <polyline points="16 6 12 2 8 6" />
-                    <line x1="12" y1="2" x2="12" y2="15" />
-                  </svg>
+                  <Share className="inline h-3.5 w-3.5 ml-0.5" />
                 </span>{" "}
                 button in the Safari toolbar (bottom centre on iPhone).
               </span>
@@ -491,23 +477,9 @@ export default function PushLab() {
               </span>
               <span>
                 Scroll down and tap{" "}
-                <span className="font-semibold">
+                <span className="inline-flex items-center gap-0.5 font-semibold">
                   Add to Home Screen
-                  {/* iOS home screen icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="inline h-3.5 w-3.5 ml-0.5"
-                  >
-                    <rect x="3" y="3" width="18" height="18" rx="3" />
-                    <line x1="12" y1="8" x2="12" y2="16" />
-                    <line x1="8" y1="12" x2="16" y2="12" />
-                  </svg>
+                  <PlusSquare className="inline h-3.5 w-3.5 ml-0.5" />
                 </span>
                 .
               </span>
@@ -554,7 +526,7 @@ export default function PushLab() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-2xs">
-                        <AppleLogo className="h-4 w-4 fill-current" />
+                        <Apple className="h-4 w-4" />
                       </div>
                       <div className="flex flex-col">
                         <span className="text-xs font-semibold text-zinc-900">

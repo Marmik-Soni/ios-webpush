@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { getStored } from "@/lib/push-client";
 import { toast } from "sonner";
-import AppleLogo from "./AppleLogo";
+import { Apple } from "react-bootstrap-icons";
 
 export default function SubscriptionSection({
   subscription,
@@ -54,9 +54,7 @@ export default function SubscriptionSection({
               label="Endpoint Host"
               value={
                 <span className="inline-flex items-center gap-1.5 justify-end">
-                  {isApple && (
-                    <AppleLogo className="h-3.5 w-3.5 fill-current text-zinc-900 inline shrink-0" />
-                  )}
+                  {isApple && <Apple className="h-3.5 w-3.5 text-zinc-900 inline shrink-0" />}
                   <span>{endpointHost ?? "unknown"}</span>
                 </span>
               }
